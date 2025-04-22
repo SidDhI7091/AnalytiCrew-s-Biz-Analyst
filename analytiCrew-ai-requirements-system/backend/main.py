@@ -6,13 +6,13 @@ from services.parsing import (
     txt_parser, html_parser,tesseract_service
 )
 
+
 app = FastAPI()
 
 SUPPORTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/jpg"]
 SUPPORTED_PDF_TYPES = ["application/pdf"]
 
-async def extract_text(file: UploadFile | StarletteUploadFile) -> str:
-    content_type = file.content_type.lower()
+
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
@@ -32,7 +32,7 @@ async def upload_file(file: UploadFile = File(...)):
     elif filename.endswith(".html") or filename.endswith(".htm"):
         content = await html_parser.parse_html(file)
     elif file.content_type in SUPPORTED_IMAGE_TYPES:
-        return await tesseract_service.extract_text_from_image(file)  
+        content = await tesseract_service.extract_text_from_image(file)  
         
     else:
         raise HTTPException(status_code=400, detail="Unsupported file type")
