@@ -12,7 +12,10 @@ app = FastAPI()
 SUPPORTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/jpg"]
 SUPPORTED_PDF_TYPES = ["application/pdf"]
 
-
+@app.post("/extract-all")
+def extract_all():
+    from services.extraction.combined_extractor import extract_from_all_documents
+    return extract_from_all_documents()
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
