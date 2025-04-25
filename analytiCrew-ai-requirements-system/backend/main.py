@@ -15,19 +15,30 @@ from firebase_admin import firestore
 from firebase_admin import auth
 from services.parsing import web_scraper
 from fastapi import Body
-
+from fastapi.middleware.cors import CORSMiddleware
+from api.routes import auth
 
 import random
 import string
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # React app origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 SUPPORTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/jpg"]
 SUPPORTED_PDF_TYPES = ["application/pdf"]
 
+
 # --------------------------------------------
 # Dummy user auth - replace with Firebase Auth
 # --------------------------------------------
+app.include_router(auth.router, prefix="/auth")
+
 def get_current_user():
     return {"user_id": "user123", "email": "sid@example.com"}  # hardcoded for now
 
