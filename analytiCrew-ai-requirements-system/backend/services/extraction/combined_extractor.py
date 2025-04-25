@@ -1,18 +1,21 @@
 from firebase_admin import firestore
 from services.extraction.mistral_extractor import extract_with_mistral
 from services.extraction.formatter import format_combined_extraction
+from datetime import datetime
+import uuid
 
 db = firestore.client()
 
-def extract_from_all_documents():
-    docs = db.collection("parsed_docs").get()
+def extract_from_all_documents(project_id):
+    parsed_docs_ref = db.collection("projects").document(project_id).collection("parsed_docs")
+    docs = parsed_docs_ref.stream()
 
     combined_text = ""
     sources = []
 
     for doc in docs:
         data = doc.to_dict()
-        if data.get("status") == "parsed" and "content" in data:
+        if data.get("status") == "parsed":
             combined_text += f"\n\nSource: {data['filename']}\n{data['content']}"
             sources.append(data["filename"])
 
@@ -21,19 +24,22 @@ def extract_from_all_documents():
 
     raw_result = extract_with_mistral(combined_text)
 
-    # Format all categories (functional, non-functional, etc.) into a single JSON record
-    formatted = format_combined_extraction(raw_result, sources)
+    requirements_ref = db.collection("projects").document(project_id).collection("extracted_requirements")
+    total_saved = 0    
 
-    # Store in a new document
-    output_doc = {
-        "filename": "ALL_COMBINED",
-        "content": combined_text,
-        "status": "extracted",
-        "timestamp": firestore.SERVER_TIMESTAMP,
-        "extracted": {
-            "requirements": [formatted]
-        }
-    }
+    for category in ["functional", "non_functional", "regulatory", "security", "ui", "usability", "other"]:
+        for req_text in raw_result.get(category, []):
+            req_id = f"REQ-{str(uuid.uuid4())[:8]}"
+            requirement = {
+                "id": req_id,
+                "requirement_text": req_text,
+                "category": category.capitalize(),
+                "source": ", ".join(sources),
+                "priority": "High",
+                "status": "Extracted",
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            requirements_ref.document(req_id).set(requirement)
+            total_saved += 1
 
-    db.collection("extracted_combined").add(output_doc)
     return {"message": "Combined extraction complete"}
