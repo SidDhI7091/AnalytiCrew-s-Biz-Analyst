@@ -22,6 +22,7 @@ const Register = () => {
           Authorization: `Bearer ${idToken}`,
           "Content-Type": "application/json"
         },
+        credentials: "include", 
         body: JSON.stringify({ name: nameInput })
       });
 

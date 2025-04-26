@@ -41,17 +41,22 @@ Document content:
                 "model": "mistral",
                 "prompt": prompt,
                 "stream": False
-            }
+            },
+            timeout = 90
         )
+        print("Mistral Response Status:", response.status_code)
+        print("Mistral Raw Response:", response.text)
 
         result = response.json().get("response", "")
         # WARNING: This assumes response is a JSON-formatted string
         try:
             parsed_result = eval(result.strip())  # Or use json.loads() if model returns valid JSON
-        except Exception:
+        except Exception as e:
+            print("Parsing error:", str(e))
             parsed_result = {"error": "Could not parse model response", "raw_output": result}
 
         return parsed_result
 
     except Exception as e:
+        print("Exception in Mistral call:", str(e))
         return {"error": str(e)}

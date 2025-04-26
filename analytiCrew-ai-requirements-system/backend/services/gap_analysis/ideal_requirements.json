@@ -1,0 +1,28 @@
+[
+    {
+      "id": "ID-001",
+      "requirement_text": "User must have strong password for login security.",
+      "word_to_match": "password"
+    },
+    {
+      "id": "ID-002",
+      "requirement_text": "System should encrypt all sensitive user data.",
+      "word_to_match": "encrypt"
+    },
+    {
+      "id": "ID-003",
+      "requirement_text": "System should allow users to reset their password easily.",
+      "word_to_match": "reset"
+    },
+    {
+      "id": "ID-004",
+      "requirement_text": "System must comply with GDPR privacy standards.",
+      "word_to_match": "GDPR"
+    },
+    {
+      "id": "ID-005",
+      "requirement_text": "Application should provide Forgot Password functionality.",
+      "word_to_match": "forgot"
+    }
+  ]
+  

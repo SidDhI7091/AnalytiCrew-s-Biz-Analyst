@@ -13,6 +13,7 @@ if not firebase_admin._apps:
 
 # Firestore DB
 db = firestore.client()
+print("🔥 Firebase Initialized Successfully")
 
 def store_parsed_content(filename, filetype, content):
     """Stores parsed document into Firestore"""

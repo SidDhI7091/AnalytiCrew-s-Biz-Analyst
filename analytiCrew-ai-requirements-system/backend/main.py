@@ -20,6 +20,7 @@ from api.routes import auth
 
 import random
 import string
+from api.routes import gap_analysis
 
 app = FastAPI()
 app.add_middleware(
@@ -38,6 +39,7 @@ SUPPORTED_PDF_TYPES = ["application/pdf"]
 # Dummy user auth - replace with Firebase Auth
 # --------------------------------------------
 app.include_router(auth.router, prefix="/auth")
+app.include_router(gap_analysis.router)
 
 def get_current_user():
     return {"user_id": "user123", "email": "sid@example.com"}  # hardcoded for now
@@ -98,6 +100,8 @@ def extract_all(project_id: str, user=Depends(get_current_user)):
                 "timestamp": datetime.utcnow().isoformat()
             }
             requirements_ref.document(req_id).set(requirement)
+    print("Text Sent to Mistral is:", combined_text[:500])  # Print first 500 chars
+        
 
     return {"message": "Extraction complete."}
 # --------------------------------------------
@@ -229,3 +233,4 @@ def list_project_members(project_id: str, user=Depends(get_current_user)):
             continue
 
     return {"members": members}
+
