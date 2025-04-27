@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Generation</title>
+</head>
+<body>
+    <h1>Generate Document</h1>
+
+    <label for="projectId">Enter Project ID:</label>
+    <input type="text" id="projectId" name="projectId">
+    <button id="generateBtn">Generate Document</button>
+
+    <div id="status"></div>
+
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const projectId = document.getElementById('projectId').value;
+            if (!projectId) {
+                alert('Please enter a project ID');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/generate-doc', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ project_id: projectId }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('status').innerHTML = `<p>${data.message}</p><a href="${data.file_path}" download>Download Document</a>`;
+                } else {
+                    document.getElementById('status').innerHTML = `<p style="color:red">${data.error}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('status').innerHTML = `<p style="color:red">An error occurred: ${error}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
