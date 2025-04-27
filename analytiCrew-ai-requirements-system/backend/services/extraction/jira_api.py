@@ -94,109 +94,6 @@
 
 # create_jira_story(
 #     email="analystbarclays@gmail.com",
-#     api_token="ATATT3xFfGF0xz1wWfGzWt-nDbTIzcYfaIgSbgQqLlAYMrTMO1x8wxWgwWzsAzM1PIUbYMh7bydIIimz4MjfiSCy8v4ZBwWJn3zU1rsAjr6lnCsF2faapfKUYRe510GzEC_iScei6g6vAel4aHpOcMLOjfpabL106zta7GpWsgANhNjly4KTGf0=9361EC46",
-#     project_key="SCRUM",
-#     jira_domain="analystbarclays",
-#     summary="KYC API Integration Requirement",
-#     raw_description=sample_description
-# )
-
-# import requests
-# from requests.auth import HTTPBasicAuth
-# import json
-
-# # Define ADF formatter first
-# def format_adf_description(description_text):
-#     lines = description_text.strip().split('\n')
-#     content_blocks = []
-
-#     for line in lines:
-#         line = line.strip()
-
-#         if line.lower().startswith("title:"):
-#             content_blocks.append({
-#                 "type": "heading",
-#                 "attrs": {"level": 2},
-#                 "content": [{"type": "text", "text": line[6:].strip()}]
-#             })
-#         elif line.startswith("-"):
-#             content_blocks.append({
-#                 "type": "bulletList",
-#                 "content": [{
-#                     "type": "listItem",
-#                     "content": [{
-#                         "type": "paragraph",
-#                         "content": [{"type": "text", "text": line[1:].strip()}]
-#                     }]
-#                 }]
-#             })
-#         elif "http" in line:
-#             text_part = line.split("http")[0].strip()
-#             url_part = line[line.find("http"):].strip()
-#             content_blocks.append({
-#                 "type": "paragraph",
-#                 "content": [
-#                     {"type": "text", "text": text_part + " " if text_part else ""},
-#                     {"type": "text", "text": url_part, "marks": [{"type": "link", "attrs": {"href": url_part}}]}
-#                 ]
-#             })
-#         elif line:
-#             content_blocks.append({
-#                 "type": "paragraph",
-#                 "content": [{"type": "text", "text": line}]
-#             })
-
-#     return {
-#         "type": "doc",
-#         "version": 1,
-#         "content": content_blocks
-#     }
-
-# # Function to create story
-# def create_jira_story(email, api_token, project_key, jira_domain, summary, raw_description):
-#     url = f"https://{jira_domain}.atlassian.net/rest/api/3/issue"
-#     headers = {
-#         "Accept": "application/json",
-#         "Content-Type": "application/json"
-#     }
-
-#     description_adf = format_adf_description(raw_description)
-
-#     payload = json.dumps({
-#         "fields": {
-#             "project": {"key": project_key},
-#             "summary": summary,
-#             "description": description_adf,
-#             "issuetype": {"name": "Story"}
-#         }
-#     })
-
-#     response = requests.post(
-#         url,
-#         data=payload,
-#         headers=headers,
-#         auth=HTTPBasicAuth(email, api_token)
-#     )
-
-#     if response.status_code == 201:
-#         print(f"Created story: {summary}")
-#         return response.json()["key"]
-#     else:
-#         print(f"Failed to create story: {response.status_code}")
-#         print(response.text)
-#         return None
-
-# # Now call the function with real values
-# sample_description = """
-# Title: KYC Verification
-# The system must validate PAN and Aadhaar using NSDL API.
-# - Integrate with UIDAI endpoint
-# - Log verification status
-# More: https://nsdl.co.in
-# """
-
-# create_jira_story(
-#     email="analystbarclays@gmail.com",
 #     api_token="ATATT3xFfGF0lTjqI9D5Ia97iEMEJdY3zNXaLxqJZKJZ6SsrRHC77v4WLKjLF3lFUuMhJghHoB9fHRmTH3eYegEE3aebS9rWAlyLzxkysD0GYkYtXobLPqYN7BmpRznt8GCo0Oqg5U3F4JhdJy9nX1vt2HNmMTPUSa8AUjvO-w4_v4H5Rd1Xn2Q=77CB1E06",
 #     project_key="SCRUM",
 #     jira_domain="analystbarclays",
@@ -207,12 +104,20 @@
 import requests
 from requests.auth import HTTPBasicAuth
 import json
+from firebase_admin import firestore , credentials
 import firebase_admin
-from firebase_admin import firestore
 
+# from firebase_admin import firestore
+# from firebase.firebase_init import db
 # # Initialize Firebase with your service account key
 # cred = credentials.Certificate(r"..\firebase\firebase-admin-key.json")
 # firebase_admin.initialize_app(cred)
+
+# Firestore client
+# db = firestore.client()
+
+cred = credentials.Certificate("firebase/firebase-admin-key.json")  # Replace with the correct path
+firebase_admin.initialize_app(cred)
 
 # Firestore client
 db = firestore.client()
@@ -268,7 +173,6 @@ def format_adf_description(description_text):
 
 # Function to create story in Jira
 def create_jira_story(email, api_token, project_key, jira_domain, summary, raw_description):
-    print(f"Creating Jira story for: {summary}")
     url = f"https://{jira_domain}.atlassian.net/rest/api/3/issue"
     headers = {
         "Accept": "application/json",
@@ -294,6 +198,9 @@ def create_jira_story(email, api_token, project_key, jira_domain, summary, raw_d
             auth=HTTPBasicAuth(email, api_token)
         )
 
+        print(f"Jira response status code: {response.status_code}")
+        print(f"Response content: {response.text}")
+
         if response.status_code == 201:
             print(f"Created story: {summary}")
             return response.json()["key"]
@@ -305,6 +212,7 @@ def create_jira_story(email, api_token, project_key, jira_domain, summary, raw_d
         print(f"Error while creating Jira story: {e}")
         return None
 
+
 # Function to loop through all projects and their requirements
 def export_requirements_to_jira(email, api_token, jira_domain):
     print("Exporting requirements to Jira...")
@@ -314,7 +222,7 @@ def export_requirements_to_jira(email, api_token, jira_domain):
     projects = projects_ref.stream()
     
     for project in projects:
-        project_name = project.id  # The project name in Firebase
+        project_name = project  # The project name in Firebase
         project_id = project_name  # The project name in Jira
 
         print(f"Processing project: {project_name}")

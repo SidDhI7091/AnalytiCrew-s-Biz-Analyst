@@ -6,7 +6,7 @@ from datetime import datetime
 import uuid
 from services.parsing import (
     pdf_parser, docx_parser, excel_parser, eml_parser,
-    txt_parser, html_parser,tesseract_service
+    txt_parser, html_parser,tesseract_service,ppt_parser
 )
 from services.extraction.mistral_extractor import extract_with_mistral
 from services.extraction.formatter import format_combined_extraction
@@ -125,6 +125,8 @@ async def upload_file(project_id: str, file: UploadFile = File(...), user=Depend
         content = await txt_parser.parse_txt(file)
     elif filename.endswith(".html") or filename.endswith(".htm"):
         content = await html_parser.parse_html(file)
+    elif filename.endswith(".pptx"):
+        content = ppt_parser.parse_ppt(file)
     elif file.content_type in SUPPORTED_IMAGE_TYPES:
         content = await tesseract_service.extract_text_from_image(file)  
         

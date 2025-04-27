@@ -3,7 +3,7 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
 const ChatbotUI = () => {
-  const projectId = "1019"; // 🔥 Hardcoded for now
+  const projectId = "TRAN"; // 🔥 Hardcoded for now
   const [messages, setMessages] = useState([
     { text: "Hello! I can help you fill missing requirements. 🚀", sender: "bot" }
   ]);
