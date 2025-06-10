@@ -91,10 +91,10 @@
 # - Log verification status
 # More: https://nsdl.co.in
 # """
-
+#analytiCrew-ai-requirements-system/backend/firebase/jira_api.py
 # create_jira_story(
 #     email="analystbarclays@gmail.com",
-#     api_token="ATATT3xFfGF0lTjqI9D5Ia97iEMEJdY3zNXaLxqJZKJZ6SsrRHC77v4WLKjLF3lFUuMhJghHoB9fHRmTH3eYegEE3aebS9rWAlyLzxkysD0GYkYtXobLPqYN7BmpRznt8GCo0Oqg5U3F4JhdJy9nX1vt2HNmMTPUSa8AUjvO-w4_v4H5Rd1Xn2Q=77CB1E06",
+#     api_token="Your Api token",
 #     project_key="SCRUM",
 #     jira_domain="analystbarclays",
 #     summary="KYC API Integration Requirement",
